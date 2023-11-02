@@ -6,7 +6,7 @@ Check whether a URL exists in your EZproxy config.
 
 ```
 ./scripts/generate_files.sh /path/to/ezproxy/config.txt/folder
-docker build -t ezproxy-proxy-url:latest
+docker build -t ezproxy-proxy-url:latest .
 docker run \
   -d \
   --name ezproxy-proxy-url \

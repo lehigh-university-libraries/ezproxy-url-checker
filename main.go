@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"strings"
 )
@@ -69,37 +70,53 @@ func populateMap(f string) (map[string]bool, error) {
 func checkUrl(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
-		url := r.URL.Query().Get("url")
-		if url == "" {
+		u := r.URL.Query().Get("url")
+		if u == "" {
 			http.Error(w, "url parameter not provided.", http.StatusBadRequest)
 			return
 		}
-		log.Println("Checking", url)
 
-		w.Header().Set("Content-Type", "text/plain")
-		if e.Hosts[url] || e.Urls[url] {
-			log.Println("Found in hosts or urls")
-			w.WriteHeader(http.StatusOK)
-			fmt.Fprint(w, "1")
+		p, err := url.Parse(u)
+		if err != nil {
+			log.Printf("Error parsing URL for %s: %v\n", u, err)
+			http.Error(w, "url parameter not valid.", http.StatusBadRequest)
 			return
 		}
 
-		// check for wildcard domains
-		domainParts := strings.Split(url, ".")
-		for i := len(domainParts); i >= 2; i-- {
-			subdomain := strings.Join(domainParts[len(domainParts)-i:], ".")
-			if e.Domains[subdomain] {
-				log.Printf("Found in domains %s\n", subdomain)
+		httpStatus := http.StatusNotFound
 
-				w.WriteHeader(http.StatusOK)
-				fmt.Fprint(w, "1")
-				return
+		// normalize the URL so we are always dealing with a domain
+		domain := p.Hostname()
+		// but also handle just passing the domain to the endpoint
+		if p.Scheme == "" || p.Host == "" {
+			domain = u
+		}
+
+		if e.Hosts[domain] || e.Urls[domain] {
+			httpStatus = http.StatusOK
+		} else {
+			// check for wildcard domains set in EZProxy
+			domainParts := strings.Split(domain, ".")
+			for i := len(domainParts); i >= 2; i-- {
+				subdomain := strings.Join(domainParts[len(domainParts)-i:], ".")
+				if e.Domains[subdomain] {
+					httpStatus = http.StatusOK
+					break
+				}
 			}
 		}
 
-		w.WriteHeader(http.StatusNotFound)
-		fmt.Fprint(w, "0")
+		log.Printf("GET /check?url=%s HTTP/1.1 %d\n", u, httpStatus)
+
+		w.WriteHeader(httpStatus)
+		w.Header().Set("Content-Type", "text/plain")
+		if httpStatus == http.StatusOK {
+			fmt.Fprint(w, "1")
+		} else {
+			fmt.Fprint(w, "0")
+		}
 	default:
+		log.Printf("%s /check HTTP/1.1 %d\n", r.Method, http.StatusMethodNotAllowed)
 		http.Error(w, "Method not allowed.", http.StatusMethodNotAllowed)
 	}
 }

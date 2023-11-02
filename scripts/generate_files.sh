@@ -1,36 +1,42 @@
 #!/usr/bin/env bash
 
-set -eou pipefail
+if [ "$#" -eq 0 ] || [ ! -d $1 ]; then
+  echo "Need to pass the directory to EZProxy config to this script"
+  exit 1
+fi
 
 DIR=$1
+if [ ! -f "$DIR/config.txt" ]; then
+  echo "$DIR/config.txt doesn't exist"
+  exit 1
+fi
+
 FILES=("config.txt")
 FILES+=($(grep IncludeFile $DIR/config.txt | awk '{print $2}'))
 
-rm -f urls.txt hosts.txt domains.txt wildcard.txt
+script_dir=$(dirname "$(readlink -f "$0")")
+CONFIG_DIR="$script_dir/../config"
+echo $CONFIG_DIR
+rm -f $CONFIG_DIR/*.txt
+
 for FILE in "${FILES[@]}"; do
   echo "$DIR/$FILE"
-  grep -i ^U $DIR/config.txt \
-  | grep -v "Form=post " \
-  | awk '{print $2}' \
-  | sort | uniq \
-  | awk -F '/' '{print $1,"//",$3}' | sed 's/ //g' \
-  >> urls.txt
 
-  grep -i ^H $DIR/config.txt \
-  | awk '{print $2}' \
-  | sort | uniq \
-  >> hosts.txt
+  egrep -i '^(U|URL) ' "$DIR/$FILE" \
+    | awk '{print $2}' \
+    | sort | uniq >> $CONFIG_DIR/urls.txt
 
-  egrep -i '^(Domain|D|DJ|DomainJavascript) ' $DIR/config.txt \
-  | awk '{print $2}' \
-  | sort | uniq \
-  >> domains.txt
+  egrep -i '^(H|Host|HJ|HostJavascript) ' "$DIR/$FILE" \
+    | awk '{print $2}' \
+    | sort | uniq >> $CONFIG_DIR/hosts.txt
 
+  egrep -i '^(Domain|D|DJ|DomainJavascript) '  "$DIR/$FILE" \
+    | awk '{print $2}' \
+    | sort | uniq >> $CONFIG_DIR/domains.txt
 done
 
 RESULTS=( urls.txt hosts.txt domains.txt )
 for RESULT in "${RESULTS[@]}"; do
-  sort $RESULT | uniq > tmp
-  mv tmp config/$RESULT
-  rm $RESULT
+  cat $CONFIG_DIR/$RESULT | sed -E 's#^(https?://)?([^/]+).*#\2#' | sort | uniq > tmp
+  mv tmp $CONFIG_DIR/$RESULT
 done
