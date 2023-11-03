@@ -111,7 +111,7 @@ func checkUrl(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		log.Printf("GET /check?url=%s HTTP/1.1 %d\n", u, httpStatus)
+		log.Printf("GET /proxyUrl?url=%s HTTP/1.1 %d\n", u, httpStatus)
 
 		w.WriteHeader(httpStatus)
 		w.Header().Set("Content-Type", "text/plain")
@@ -121,7 +121,7 @@ func checkUrl(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprint(w, "0")
 		}
 	default:
-		log.Printf("%s /check HTTP/1.1 %d\n", r.Method, http.StatusMethodNotAllowed)
+		log.Printf("%s /proxyUrl HTTP/1.1 %d\n", r.Method, http.StatusMethodNotAllowed)
 		http.Error(w, "Method not allowed.", http.StatusMethodNotAllowed)
 	}
 }
