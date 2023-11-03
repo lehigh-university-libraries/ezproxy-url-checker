@@ -37,8 +37,13 @@ func init() {
 func main() {
 	http.HandleFunc("/proxyUrl", checkUrl)
 
-	log.Println("Server listening on :8080")
-	if err := http.ListenAndServe(":8080", nil); err != nil {
+	listen := os.Getenv("LISTEN")
+	if listen == "" {
+		listen = "127.0.0.1:8888"
+	}
+
+	log.Printf("Server listening on %s\n", listen)
+	if err := http.ListenAndServe(listen, nil); err != nil {
 		panic(err)
 	}
 }
