@@ -4,6 +4,7 @@ set -eou pipefail
 
 # Originally from https://github.com/dasginganinja/drush-launcher/blob/c9d90d4ff02dccccf133f1f7419a0d6983ed367d/download_and_build.sh
 # Modified to match gorelease default binary names
+# Also verified checksums
 
 # Define the GitHub repository owner, repository name, and binary name
 repo_owner="lehigh-university-libraries"
@@ -16,12 +17,21 @@ download_release_asset() {
     download_url="https://github.com/${repo_owner}/${repo_name}/releases/download/${latest_release}/$ASSET"
     echo "Downloading ${latest_release} release..."
     curl -s -L -o "${ASSET}" "$download_url"
+    curl -s -L -o checksums.txt "https://github.com/${repo_owner}/${repo_name}/releases/download/${latest_release}/checksums.txt"
+    CHECKSUM_SOURCE=$(grep "$ASSET" checksums.txt)
+    CHECKSUM_DL=$(sha256sum $ASSET)
+    if [ "$CHECKSUM_SOURCE" != "$CHECKSUM_DL" ]; then
+      echo "Checksums do not match."
+      rm "$ASSET" checksums.txt
+      exit 1
+    fi
+
     if [[ "$GOOS" == "Windows" ]]; then
       unzip $ASSET
     else
       tar -zxf "$ASSET"
     fi
-    rm $ASSET
+    rm $ASSET checksums.txt
 }
 
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
