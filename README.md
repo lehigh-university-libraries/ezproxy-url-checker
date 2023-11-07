@@ -7,7 +7,6 @@ Check whether a URL exists in your EZproxy config.
 Download the binary from [the latest release](https://github.com/lehigh-university-libraries/ezproxy-url-checker/releases/latest). An automated way to do that might be:
 
 ```
-ARCH="Linux_x86_64"
 ./scripts/download-binary.sh
 ```
 
@@ -23,7 +22,6 @@ See if google scholar is in your EZproxy config
 ```
 curl "http://localhost:8888/proxyUrl?url=https://scholar.google.com"
 ```
-
 
 ## TODO
 
