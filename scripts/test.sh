@@ -40,7 +40,7 @@ for URL in "${URLS[@]}"; do
     -s \
     "http://localhost:8888/proxyUrl?url=$URL")
   echo -e "\t${STATUS_CODE}"
-  if [ "${STATUS_CODE}" -eq 200 ]; then
+  if [ ! "${STATUS_CODE}" -eq 404 ]; then
     EXIT_CODE=1
   fi
 done
