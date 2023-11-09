@@ -39,7 +39,7 @@ func main() {
 
 	listen := os.Getenv("LISTEN")
 	if listen == "" {
-		listen = "127.0.0.1:8888"
+		listen = ":8888"
 	}
 
 	log.Printf("Server listening on %s\n", listen)
