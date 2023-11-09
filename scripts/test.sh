@@ -13,13 +13,13 @@ URLS=(
 
 )
 for URL in "${URLS[@]}"; do
-  echo "Checking $URL"
+  echo "Checking ${URL}"
   STATUS_CODE=$(curl -w '%{http_code}' \
     -o /dev/null \
     -s \
     "http://localhost:8888/proxyUrl?url=$URL")
-  echo -e "\t$STATUS_CODE"
-  if [ ! ${STATUS_CODE} -eq 200 ]; then
+  echo -e "\t${STATUS_CODE}"
+  if [ ! "${STATUS_CODE}" -eq 200 ]; then
     EXIT_CODE=1
   fi
 done
@@ -31,15 +31,15 @@ URLS=(
   "https://$RANDOM.$RANDOM.lehigh.edu"
 )
 for URL in "${URLS[@]}"; do
-  echo "Checking $URL"
+  echo "Checking ${URL}"
   STATUS_CODE=$(curl -w '%{http_code}' \
     -o /dev/null \
     -s \
     "http://localhost:8888/proxyUrl?url=$URL")
-  echo -e "\t$STATUS_CODE"
-  if [ ${STATUS_CODE} -eq 200 ]; then
+  echo -e "\t${STATUS_CODE}"
+  if [ "${STATUS_CODE}" -eq 200 ]; then
     EXIT_CODE=1
   fi
 done
 
-exit $EXIT_CODE
+exit "${EXIT_CODE}"
