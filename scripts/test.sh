@@ -7,7 +7,9 @@ EXIT_CODE=0
 echo "Checking domains in config return 200s"
 URLS=(
   "https://lts.lehigh.edu"
+  "https://lts.lehigh.edu/"
   "https%3A%2F%2Flts.lehigh.edu"
+  "https%3A%2F%2Flts.lehigh.edu%2F"
   "https://preserve.lehigh.edu"
   "https://$RANDOM.lib.lehigh.edu"
   "https://$RANDOM.$RANDOM.lib.lehigh.edu"
