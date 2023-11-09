@@ -1,0 +1,3 @@
+Title Google Scholar
+URL https://scholar.google.com
+Host https://scholar.google.com

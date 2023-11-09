@@ -1,3 +1,5 @@
 U lts.lehigh.edu
 H preserve.lehigh.edu
 D lib.lehigh.edu
+
+IncludeFile scholar.txt
