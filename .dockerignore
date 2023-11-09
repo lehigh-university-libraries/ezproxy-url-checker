@@ -1,0 +1,9 @@
+fixtures/
+config/
+Dockerfile
+.gitignore
+.dockerignore
+.goreleaser.yml
+README.md
+.github
+.git

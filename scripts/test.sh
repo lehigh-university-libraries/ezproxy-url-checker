@@ -8,8 +8,8 @@ echo "Checking domains in config return 200s"
 URLS=(
   "https://lts.lehigh.edu"
   "https://preserve.lehigh.edu"
-  "https://$RANDOM.lehigh.edu"
-  "https://$RANDOM.$RANDOM.lehigh.edu"
+  "https://$RANDOM.lib.lehigh.edu"
+  "https://$RANDOM.$RANDOM.lib.lehigh.edu"
 
 )
 for URL in "${URLS[@]}"; do
@@ -27,6 +27,8 @@ done
 echo "Checking domains not in config throw 404s"
 URLS=(
   "https://scholar.google.com"
+  "https://$RANDOM.lehigh.edu"
+  "https://$RANDOM.$RANDOM.lehigh.edu"
 )
 for URL in "${URLS[@]}"; do
   echo "Checking $URL"
