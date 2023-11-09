@@ -13,6 +13,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: shellcheck
+        run: shellcheck scripts/*.sh
+
       - uses: actions/setup-go@v4
 
       - name: golangci-lint
