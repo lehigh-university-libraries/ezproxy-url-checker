@@ -13,7 +13,7 @@ Download the binary from [the latest release](https://github.com/lehigh-universi
 Generate the files the service needs from your EZProxy config and start the service
 
 ```
-./scripts/generate_files.sh /path/to/ezproxy/config.txt/folder
+./scripts/generate-files.sh /path/to/ezproxy/config.txt/folder
 ./ezproxy-url-checker
 ```
 

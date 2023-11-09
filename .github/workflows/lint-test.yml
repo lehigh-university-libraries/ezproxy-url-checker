@@ -13,6 +13,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: shellcheck
+        run: shellcheck scripts/*.sh
+
       - uses: actions/setup-go@v4
 
       - name: golangci-lint
@@ -41,10 +44,11 @@ jobs:
       - name: Run tests
         shell: bash
         run: |-
+          ./scripts/generate-files.sh $(pwd)/fixtures
           CONTAINER=$(docker run \
             --rm \
             -d \
-            -v $(pwd)/fixtures:/app/config \
+            -v $(pwd)/config:/app/config \
             ezproxy-url-checker:${{steps.extract_branch.outputs.branch}})
           docker logs $CONTAINER
           docker exec $CONTAINER /bin/bash /app/scripts/test.sh
