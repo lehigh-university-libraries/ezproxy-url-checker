@@ -38,13 +38,9 @@ jobs:
           tags: |
             ezproxy-url-checker:${{steps.extract_branch.outputs.branch}}
 
-      - name: Start service
+      - name: Run tests
         shell: bash
         run: |-
           cp fixtures/*.txt config/
           docker run --rm -d -p 8888:8888 ezproxy-url-checker:${{steps.extract_branch.outputs.branch}}
-
-      - name: Run tests
-        shell: bash
-        run: |-
           ./scripts/test.sh
