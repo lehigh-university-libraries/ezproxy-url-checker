@@ -13,11 +13,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Extract branch name
-        shell: bash
-        run: echo "branch=${GITHUB_REF#refs/heads/}"  >> $GITHUB_OUTPUT
-        id: extract_branch
-
       - uses: actions/setup-go@v4
 
       - name: golangci-lint
@@ -27,21 +22,29 @@ jobs:
   test:
     runs-on: ubuntu-latest
     needs: [lint]
-    - name: Build
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        push: false
-        tags: |
-          ezproxy-url-checker:${{steps.extract_branch.outputs.branch}}
+    steps:
+      - uses: actions/checkout@v4
 
-    - name: Start service
-      shell: bash
-      run: |-
-        cp fixtures/*.txt config/
-        docker run --rm -d -p 8888:8888 ezproxy-url-checker:${{steps.extract_branch.outputs.branch}}
-    
-    - name: Start service
-      shell: bash
-      run: |-
-        ./scripts/test.sh
+      - name: Extract branch name
+        shell: bash
+        run: echo "branch=${GITHUB_REF#refs/heads/}"  >> $GITHUB_OUTPUT
+        id: extract_branch
+
+      - name: Build
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          tags: |
+            ezproxy-url-checker:${{steps.extract_branch.outputs.branch}}
+
+      - name: Start service
+        shell: bash
+        run: |-
+          cp fixtures/*.txt config/
+          docker run --rm -d -p 8888:8888 ezproxy-url-checker:${{steps.extract_branch.outputs.branch}}
+
+      - name: Run tests
+        shell: bash
+        run: |-
+          ./scripts/test.sh
