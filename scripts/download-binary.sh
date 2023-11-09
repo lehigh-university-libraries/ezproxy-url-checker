@@ -18,20 +18,20 @@ download_release_asset() {
     echo "Downloading ${latest_release} release..."
     curl -s -L -o "${ASSET}" "$download_url"
     curl -s -L -o checksums.txt "https://github.com/${repo_owner}/${repo_name}/releases/download/${latest_release}/checksums.txt"
-    CHECKSUM_SOURCE=$(grep "$ASSET" checksums.txt)
-    CHECKSUM_DL=$(sha256sum $ASSET)
+    CHECKSUM_SOURCE=$(grep "${ASSET}" checksums.txt)
+    CHECKSUM_DL=$(sha256sum "${ASSET}")
     if [ "$CHECKSUM_SOURCE" != "$CHECKSUM_DL" ]; then
       echo "Checksums do not match."
-      rm "$ASSET" checksums.txt
+      rm "${ASSET}" checksums.txt
       exit 1
     fi
 
     if [[ "$GOOS" == "Windows" ]]; then
-      unzip $ASSET
+      unzip "${ASSET}"
     else
-      tar -zxf "$ASSET"
+      tar -zxf "${ASSET}"
     fi
-    rm $ASSET checksums.txt
+    rm "${ASSET}" checksums.txt
 }
 
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
@@ -54,7 +54,6 @@ fi
 
 # Fetch the latest release version using GitHub API
 latest_release=$(curl -s "https://api.github.com/repos/${repo_owner}/${repo_name}/releases/latest" | jq -r '.tag_name')
-latest_version=$(echo "${latest_release}" | cut -c 2-)
 
 # Check if the latest release version is available
 if [ -z "$latest_release" ]; then
@@ -71,7 +70,7 @@ fi
 
 # Check if the required binary for the user's architecture exists in the latest release
 binary_filename="${binary_name}_${GOOS}_${GOARCH}${binary_extension}"
-echo "Binary filename: " $binary_filename
+echo "Binary filename: ${binary_filename}"
 release_assets=$(curl -s "https://api.github.com/repos/${repo_owner}/${repo_name}/releases/tags/${latest_release}" | jq -r '.assets[].name')
 if [[ "$release_assets" == *"$binary_filename"* ]]; then
     echo "Binary for ${GOOS}-${GOARCH} architecture found in the latest release."
