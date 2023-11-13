@@ -52,7 +52,7 @@ WantedBy=multi-user.target
 
 [Unit]
 Description=ezproxy-url-checker
-After=gcr-online.target
+After=network.target
 
 [Service]
 WorkingDirectory=/opt/ezproxy-url-checker
