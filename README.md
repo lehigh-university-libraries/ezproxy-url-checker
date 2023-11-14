@@ -69,7 +69,7 @@ $ systemctl start ezproxy-url-checker.service
 
 ## TODO
 
-- [ ] Integration tests
+- [x] Integration tests
 - [ ] CI/CD instructions
 - [ ] Better API Documentation
 - [ ] Add docker deployment instructions
