@@ -2,17 +2,10 @@ name: lint-test
 
 on:
   push:
-    branches:
-      - '**'
-    tags-ignore:
-      - '**'
-
-permissions:
-  contents: read
 
 jobs:
   lint:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
@@ -26,15 +19,10 @@ jobs:
         with:
           version: latest
   test:
-    runs-on: ubuntu-latest
     needs: [lint]
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-
-      - name: Extract branch name
-        shell: bash
-        run: echo "branch=${GITHUB_REF#refs/heads/}"  >> $GITHUB_OUTPUT
-        id: extract_branch
 
       - name: Build
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6
@@ -42,7 +30,7 @@ jobs:
           context: .
           push: false
           tags: |
-            ezproxy-url-checker:${{steps.extract_branch.outputs.branch}}
+            ezproxy-url-checker:ci
 
       - name: Run tests
         shell: bash
@@ -52,7 +40,15 @@ jobs:
             --rm \
             -d \
             -v $(pwd)/config:/app/config \
-            ezproxy-url-checker:${{steps.extract_branch.outputs.branch}})
+            ezproxy-url-checker:ci)
           docker logs $CONTAINER
           docker exec $CONTAINER /bin/bash /app/scripts/test.sh
           docker stop $CONTAINER
+  build-push-ghcr:
+    needs: [test]
+    uses: lehigh-university-libraries/gha/.github/workflows/build-push-ghcr.yaml@main
+    permissions:
+      contents: read
+      packages: write
+    secrets: inherit
+
