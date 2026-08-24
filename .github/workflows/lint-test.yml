@@ -46,7 +46,7 @@ jobs:
           docker stop $CONTAINER
   build-push-ghcr:
     needs: [test]
-    uses: lehigh-university-libraries/gha/.github/workflows/build-push-ghcr.yaml@main
+    uses: lehigh-university-libraries/gha/.github/workflows/build-push-ghcr.yaml@e26d86abfbe300be4d93570b666651c11471995b # main
     permissions:
       contents: read
       packages: write
