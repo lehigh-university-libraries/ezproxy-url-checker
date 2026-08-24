@@ -34,7 +34,7 @@ for FILE in "${FILES[@]}"; do
     awk '{print $2}' h.txt | sed -E 's#^(https?://)?([^/]+).*#\2#' | sort | uniq >> "${CONFIG_DIR}/hosts.txt"
   fi
 
-  grep -Ei '^(Domain|D|DJ|DomainJavascript) ' "${DIR}/$FILE" > d.txt || true
+  grep -Ei '^(Domain|D) ' "${DIR}/$FILE" > d.txt || true
   if [ -s d.txt ]; then
     awk '{print $2}' d.txt | sort | uniq >> "${CONFIG_DIR}/domains.txt"
   fi
