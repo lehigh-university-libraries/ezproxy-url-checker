@@ -14,7 +14,7 @@ if [ ! -f "${DIR}/config.txt" ]; then
 fi
 
 FILES=()
-while IFS='' read -r line; do FILES+=("$line"); done < <(grep "IncludeFile" "${DIR}/config.txt" | awk '{print $2}')
+while IFS='' read -r line; do FILES+=("$line"); done < <(grep -E "^IncludeFile" "${DIR}/config.txt" | awk '{print $2}')
 FILES+=("config.txt")
 
 script_dir=$(dirname "$(readlink -f "$0")")
